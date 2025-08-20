@@ -1,44 +1,33 @@
 package calculator;
 
 public class Calculator {
+    private final Parse parse;
+
+    public Calculator(Parse parse) {
+        this.parse = parse;
+    }
 
     public int getOutput(String input) {
-        int output = 0;
-        String value = "";
-        String delimiter = "";
-        int i = 0;
-        if (input.charAt(0) == '/') {
-            delimiter += input.charAt(2);
-            i = 5;
-        }
-        for (; i<input.length(); i++) {
-            if ((int) input.charAt(i) == 44) {
-                if (!(value.isEmpty())) {
-                    output += Integer.parseInt(value);
-                    value = "";
-                }
-            } else if ((int) input.charAt(i) == 58) {
-                if (!(value.isEmpty())) {
-                    output += Integer.parseInt(value);
-                    value = "";
-                }
+        int i = parse.parseCustom(input);
+        int result;
+        result = calculate(input,i);
 
-            } else if ((int) input.charAt(i) >= 48 && (int) input.charAt(i) <= 57) {
-                value += input.charAt(i);
-            } else if (!(delimiter.isEmpty())) {
-                if (input.charAt(i) == delimiter.charAt(0)) {
-                    if (!(value.isEmpty())) {
-                        output += Integer.parseInt(value);
-                        value = "";
-                    }
-                }
+        return result;
+    }
+
+    public int calculate(String input, int i) {
+        int output = 0;
+        for (; i<input.length(); i++) {
+            if (parse.getCustom().contains(input.charAt(i))) {
+                output += parse.parseInteger();
+            } else if (input.charAt(i) >= '0' && input.charAt(i) <= '9') {
+                parse.addValue(input.charAt(i));
             } else {
-                throw new IllegalArgumentException("애플리케이션 종료.");
+                System.out.println("숫자, 구분자 이외 문자 입력. 애플리케이션 종료.");
+                throw new IllegalArgumentException("숫자, 구분자 이외 문자 입력. 애플리케이션 종료.");
             }
         }
-        if(!(value.isEmpty())) {
-            output += Integer.parseInt(value);
-        }
+        output += parse.parseInteger();
         return output;
     }
 }
